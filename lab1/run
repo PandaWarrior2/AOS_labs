@@ -4,7 +4,8 @@ echo "Задание" $1
 
 if [ $1 -eq 1 ]; then
     cc n1.c
+    ./a.out
 elif [ $1 -eq 2 ]; then
     cc n2.c
+    ./a.out file_2 0777
 fi
-./a.out
