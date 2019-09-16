@@ -1,1 +1,10 @@
-cc lab1.c ; ./a.out
+#!/bin/bash
+rm a.out
+echo "Задание" $1
+
+if [ $1 -eq 1 ]; then
+    cc n1.c
+elif [ $1 -eq 2 ]; then
+    cc n2.c
+fi
+./a.out
