@@ -13,5 +13,9 @@ n7: clean
 	$(CC) $(CFLAGS) n7.c -o lab
 n8: clean
 	$(CC) $(CFLAGS) n8.c -o lab
+n10: clean
+	$(CC) $(CFLAGS) n10.c -o lab
+n11: clean
+	$(CC) $(CFLAGS) n11.c -o lab
 clean:
 	rm -f lab a.out
