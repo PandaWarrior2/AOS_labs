@@ -11,5 +11,7 @@ n6: clean
 	$(CC) $(CFLAGS) -DNUM=6 n2.c -o lab
 n7: clean
 	$(CC) $(CFLAGS) n7.c -o lab
+n8: clean
+	$(CC) $(CFLAGS) n8.c -o lab
 clean:
 	rm -f lab a.out
