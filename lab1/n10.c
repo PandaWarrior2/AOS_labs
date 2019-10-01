@@ -35,7 +35,7 @@ int main(int argc, char * argv[]){
         lpos = lseek(fp, 0, SEEK_CUR);
         lpos = lseek(fp, lpos-2, SEEK_SET);
         printf("%c", buf[0]);
-    } while(lpos > 0);
+    } while(lpos >= 0);
 
     printf("\n");
     close(fp);
