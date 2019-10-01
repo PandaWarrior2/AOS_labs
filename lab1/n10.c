@@ -24,17 +24,17 @@
 #include <sys/types.h>
 int main(int argc, char * argv[]){
     int fp = open(argv[1], O_RDONLY);
-    char buf[2];
-    int code = 0;
+    char *buf;
+    buf = malloc(1);
+    long code = 0;
     int lpos = 0;
-    lpos = lseek(fp, -1, SEEK_END);
-    printf("pos = %d\n", lpos);
+    //lseek(fp, 15, SEEK_SET);
+    lpos = lseek(fp, 0, SEEK_END);
     do {
-        code = read(fp, buf, 2);
-        printf("%s", buf);
-        buf[1] = '\0';
-        lpos = lseek(fp, -1, SEEK_CUR);
-        printf("pos = %d\n", lpos);
+        code = read(fp, buf,1);
+        lpos = lseek(fp, 0, SEEK_CUR);
+        lpos = lseek(fp, lpos-2, SEEK_SET);
+        printf("%c", buf[0]);
     } while(lpos > 0);
 
     printf("\n");
