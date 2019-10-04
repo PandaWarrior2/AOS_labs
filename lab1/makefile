@@ -4,9 +4,9 @@ CFLAGS=
 n1: clean
 	$(CC) $(CFLAGS) n1.c -o lab
 n2: clean
-	$(CC) $(CFLAGS) -DNUM=2 n2.c -o lab
+	$(CC) $(CFLAGS) -DNUM=2 n2n.c -o lab
 n4: clean
-	$(CC) $(CFLAGS) -DNUM=4 n2.c -o lab
+	$(CC) $(CFLAGS) n4.c -o lab
 n6: clean
 	$(CC) $(CFLAGS) -DNUM=6 n2.c -o lab
 n7: clean

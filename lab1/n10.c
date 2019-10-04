@@ -24,21 +24,21 @@
 #include <sys/types.h>
 
 int main(int argc, char * argv[]){
-    int fp = open(argv[1], O_RDONLY);
-    char *buf;
-    buf = malloc(1);
-    long code = 0;
-    int lpos = 0;
-    //lseek(fp, 15, SEEK_SET);
-    lpos = lseek(fp, 0, SEEK_END);
-    do {
-        code = read(fp, buf, 1);
-        lpos = lseek(fp, 0, SEEK_CUR);
-        lpos = lseek(fp, lpos-2, SEEK_SET);
-        printf("%c", buf[0]);
-    } while(lpos >= 0);
+    int fp;
+    if((fp = open(argv[1], O_RDONLY)) == -1){
+        perror("");
+    }
+    else{
+        char buf;
+        long code = 0;
+        lseek(fp, 0, SEEK_END);
+        do{
+            read(fp, &buf, 1);
+            write(1, &buf, 1);
+        } while(lseek(fp, (long)-2, SEEK_CUR) >= 0);
 
     printf("\n");
     close(fp);
+    }
     return 0;
 }
