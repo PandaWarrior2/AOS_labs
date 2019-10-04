@@ -36,58 +36,50 @@ int main(int argc, char * argv[]) {
         int fp;
         int mode = strtol(argv[2], 0, 8);
         int code;
-        char str[255];
+        char str[11];
         int s_code;
         if((fp = open(argv[1], O_RDWR | O_CREAT, mode)) == -1) {
             perror("Open error");
             return 0;
         }
         else {
+            int i;
             printf("File %s opened! \n", argv[1]);
-            strncpy(str, "0000000000\n", 11);
-            for(int i = 0; i<10; i++){
-                write(fp, str, 11);
+            strncpy(str, "0000000000", 10);
+            for(i = 0; i<10; i++){
+                write(fp, str, 10);
             }
             printf("Составлена матрица 10х10, заполненная нулями:\n");
             if(lseek(fp, 0, SEEK_SET) == -1) {
                 perror("Lseek error: ");
             }
             else{
-                while(read(fp, str, 11) > 0) {
-                    printf("%s", str);
+                  while(read(fp, str, 10) > 0) {
+                    printf("%s\n", str);
                 }
                 printf("\nПроставим единицы в главной диагонали. Вжух...\n");
                 lseek(fp, 0, SEEK_SET);
-                for(int i = 0; i < 10; i++){
+                for(i = 0; i < 10; i++){
                     write(fp, "1", 1);
-                    lseek(fp, 11, SEEK_CUR);
+                    lseek(fp, 10, SEEK_CUR);
                 }
                 lseek(fp, 0, SEEK_SET);
-                while(read(fp, str, 11) > 0) {
-                    printf("%s", str);
+                while(read(fp, str, 10) > 0) {
+                    printf("%s\n", str);
                 }
 
-                printf("\nИдём с конца и проставляем 1 под главной диагональю1: \n");
-                //int pos = lseek(fp, 10, SEEK_SET);
-                //for(lseek(fp, -2, SEEK_END); lseek(fp, -2, SEEK_CUR) != -1; write(fp, "X", 1));
-                //pos = write(fp, "2", 1);
-                int pos = lseek(fp, -1L, SEEK_CUR);
+                printf("\nИдём с конца и проставляем 1 под главной диагональю. Вжух...\n");
+                int pos = lseek(fp, (long)-1, SEEK_END);
                 do{
-                    //pos = lseek(fp, -1, SEEK_CUR);
-                    //if(write(fp, '1', 1) == -1)
-                    //    perror("");
-                    write(fp, '1', 1);
-                }while((pos = lseek(fp, -2, SEEK_CUR)) >= 70);
+                    if((pos/10) >= (pos % 10)){
+                        write(fp, "1", 1);
+                    }
+                }while((pos = lseek(fp, (long)-2, SEEK_CUR)) >= 0);
 
-                int p = lseek(fp, 0, SEEK_SET);
-                if(p == -1){
-                    perror("");
-                    return 0;
+                lseek(fp, 0, SEEK_SET);
+                while(read(fp, str, 10) > 0){
+                    printf("%s\n", str);
                 }
-                while(read(fp, str, 11) > 0) {
-                    printf("%s", str);
-                }
- 
             }
             close(fp);
 
