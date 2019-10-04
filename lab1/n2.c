@@ -75,8 +75,8 @@ int main(int argc, char * argv[]){
         scode = read(fp, str, 40);
         printf("[SYSCALL] read = %d\n", scode);
         str[40] = '\0';
-        printf("First 40 bytes: %s\n", str);
 
+        printf("First 40 bytes: %s\n", str);
         printf("LSEEK_CUR\n");
         pos = lseek(fp, -40, SEEK_CUR);
         pos = lseek(fp, 60, SEEK_CUR);
@@ -87,6 +87,16 @@ int main(int argc, char * argv[]){
             perror("Read error");
         str[scode] = '\0';
         printf("Bytes 60-100: %s\n", str);
+        printf("LSEEK_END\n");
+        pos = lseek(fp, -20, SEEK_END);
+        scode = read(fp, str, 20);
+        if(!scode){
+            perror("Read error");
+        }
+        else {
+            str[20] = '\0';
+            printf("End 20 bytes: %s", str);
+        }
 
     #endif
         close(fp);

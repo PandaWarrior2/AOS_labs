@@ -22,6 +22,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+
 int main(int argc, char * argv[]){
     int fp = open(argv[1], O_RDONLY);
     char *buf;
@@ -31,7 +32,7 @@ int main(int argc, char * argv[]){
     //lseek(fp, 15, SEEK_SET);
     lpos = lseek(fp, 0, SEEK_END);
     do {
-        code = read(fp, buf,1);
+        code = read(fp, buf, 1);
         lpos = lseek(fp, 0, SEEK_CUR);
         lpos = lseek(fp, lpos-2, SEEK_SET);
         printf("%c", buf[0]);
