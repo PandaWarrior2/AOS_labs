@@ -1,0 +1,70 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  n6.c
+ *
+ *    Description:  Lab 2, #6
+ *
+ *        Version:  1.0
+ *        Created:  07.10.2019 20:28:31
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Svyatoslav Nikitin, M19-512
+ *   Organization:  MEPhI
+ *
+ * =====================================================================================
+ */
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main(int argc, char * argv[]){
+    int pid = fork();
+    char * args[] = {"./slp", argv[1], NULL};
+
+    if(pid == -1){
+        perror("[P] fork error");
+        exit(0);
+    }
+
+    if(pid){
+        printf("[P] Это сообщение выведено из родительского процесса\n");
+        printf("[P] fork returned = %d\n", pid);
+        printf("[P] Process group = %d\n",getpgrp());
+        printf("[P] PID = %d\n",getpid());
+        printf("[P] PPID = %d\n",getppid());
+        if(pause() == -1){
+            perror("");
+        }
+        printf("[P] Ожидаем завершения дочернего процесса\n");
+        int code;
+        printf("[P] Дочерний процесс завершён! Статус завершения: %d\n", code);
+        int i;
+        for(i=0;i<330;i++){
+            printf("[P] %d/10\n", i);
+            sleep(1);
+        }
+
+    }
+    else{
+        printf("[C] Это сообщение выведено из дочернего процесса\n");
+        printf("[C] fork returned = %d\n", pid);
+        printf("[C] Process group = %d\n",getpgrp());
+        printf("[C] PID = %d\n",getpid());
+        printf("[C] PPID = %d\n",getppid());
+        if(pause() == -1){
+            perror("");
+        }
+        int code;
+        if((code=execvp(args[0], args)) == -1){
+            perror("[C] exec error");
+        }
+
+    }
+    return 0;
+}
+
+

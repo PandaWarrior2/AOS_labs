@@ -8,10 +8,12 @@ n2: clean
 n2: clean
 	$(CC) $(CFLAGS) n3.c -o lab
 n4: clean slp
-	$(CC) $(CFLAGS) n4.c -o lab
-
-n6: clean
+	$(CC) $(CFLAGS) -DKILL=1 n4.c -o lab
+n5: clean slp
+	$(CC) $(CFLAGS) -DKILL=0 n5.c -o lab
+n6: clean slp
 	$(CC) $(CFLAGS) n6.c -o lab
+
 n7: clean
 	$(CC) $(CFLAGS) n7.c -o lab
 n8: clean

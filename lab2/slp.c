@@ -32,9 +32,11 @@ int main(int argc, char * argv[]){
         int i;
         for(i = 0; i < s_time; i++){
             printf("[SLP] %d/%d; PID = %d; PPID = %d\n", i, s_time, getpid(), getppid());
+#if (KILL == 1)
             if(i == 3) {
                 kill(getppid(), 9);
             }
+#endif
             sleep(1);
         }
     }
