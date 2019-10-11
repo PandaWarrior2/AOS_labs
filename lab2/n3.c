@@ -22,11 +22,13 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-int main(int argc, char * argv[]){
-    int pid = fork();
-    char * args[] = {"/bin/ls", "-la", NULL};
-
-    if(pid == -1){
+int main(int argc, char * argv[], char * argp[]){
+    if(argc < 2){
+        printf("Usage: %s program_name [arg1, arg2, ..., argn].\n", *argv);
+        exit(1);
+    }
+    int pid;
+    if((pid = fork()) == -1){
         perror("[P] fork error");
         exit(0);
     }
@@ -50,13 +52,11 @@ int main(int argc, char * argv[]){
     else{
         printf("[C] Это сообщение выведено из дочернего процесса\n");
         printf("[C] fork returned = %d\n", pid);
-        printf("[C] Process group = %d\n",getpgrp());
-        printf("[C] PID = %d\n",getpid());
-        printf("[C] PPID = %d\n",getppid());
-        int code;
-        if((code=execvp(args[0], args)) == -1){
-            perror("[C] exec error");
-        }
+        printf("[C] Process group = %d\n", getpgrp());
+        printf("[C] PID = %d\n", getpid());
+        printf("[C] PPID = %d\n", getppid());
+        execve(argv[1], argv+1, argp);
+        perror("[C] exec error");
 
     }
     return 0;

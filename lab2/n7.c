@@ -21,11 +21,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-int main(int argc, char * argv[]){
-    int pid = fork();
-    char * args[] = {"./slp", argv[1], NULL};
+int main(int argc, char * argv[], char * argp[]){
 
-    if(pid == -1){
+    if(argc < 2){
+        printf("Usage: %s program_name [arg1, arg2, ..., argn].\n", *argv);
+        exit(1);
+    }
+    int pid;
+    if((pid=fork()) == -1){
         perror("[P] fork error");
         exit(0);
     }
@@ -61,10 +64,8 @@ int main(int argc, char * argv[]){
         if(pause() == -1){
             perror("");
         }
-        int code;
-        if((code=execvp(args[0], args)) == -1){
-            perror("[C] exec error");
-        }
+        execve(argv[1], argv+1, argp);
+        perror("[C] exec error");
 
     }
     return 0;

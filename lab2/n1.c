@@ -32,6 +32,12 @@ int main(int argc, char * argv[], char * argp[]){
             printf("Переменная окружения добавлена! setenv = %d\n", ret);
             env = getenv(argv[1]);
             printf("getenv(%s) = %s\n", argv[1], env);
+
+            printf("Вывод окружения с argp:\n");
+            int i;
+            for(i=0; *(argp+i); i++){
+                printf("%s\n", *(argp+i));
+            }
         }
     }
     return 0;
