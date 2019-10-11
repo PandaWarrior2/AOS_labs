@@ -16,8 +16,9 @@
  * =====================================================================================
  */
 #include <stdlib.h>
+#include <stdio.h>
 
-int main(int argc, char * argv[]){
+int main(int argc, char * argv[], char * argp[]){
     if(argc < 3) {
         printf("Enter: %s <name> <value>\n", argv[0]);
     }
@@ -25,7 +26,7 @@ int main(int argc, char * argv[]){
         int ret;
         char *env;
         if((ret = setenv(argv[1], argv[2], 1)) == -1){
-            perror("[SETENV]");
+            perror("SETENV error");
         }
         else{
             printf("Переменная окружения добавлена! setenv = %d\n", ret);
