@@ -24,11 +24,13 @@ n9: clean
 	rm -f out_parent out_child
 	$(CC) $(CFLAGS) n9.c -o lab
 
-n10: clean
+n10: clean prog10
 	$(CC) $(CFLAGS) n10.c -o lab
 n11: clean
 	$(CC) $(CFLAGS) n11.c -o lab
 clean:
-	rm -f lab a.out file slp
+	rm -f lab a.out file slp prog
 slp: clean
 	$(CC) $(CFLAGS) slp.c -o slp
+prog10: clean
+	$(CC) $(CFLAGS) prog10.c -o prog
