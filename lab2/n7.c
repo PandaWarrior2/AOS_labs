@@ -59,10 +59,13 @@ int main(int argc, char * argv[], char * argp[]){
         printf("[C] PID = %d\n",getpid());
         printf("[C] PPID = %d\n",getppid());
         if(setpgrp() == -1){
-            perror("");
+            perror("setpgrp error");
+        }
+        else{
+            printf("[C] Process group set to %d\n", getpgrp());
         }
         if(pause() == -1){
-            perror("");
+            perror("pause error");
         }
         execve(argv[1], argv+1, argp);
         perror("[C] exec error");

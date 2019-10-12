@@ -35,6 +35,7 @@ int main(int argc, char * argv[]){
 #if (KILL == 1)
             if(i == 3) {
                 kill(getppid(), 9);
+                printf("[SLP] Родительский процесс убит!\n");
             }
 #endif
             sleep(1);

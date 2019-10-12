@@ -5,12 +5,13 @@ n1: clean
 	$(CC) $(CFLAGS) n1.c -o lab
 n2: clean
 	$(CC) $(CFLAGS) n2.c -o lab
-n3: clean
+n3: clean slp
 	$(CC) $(CFLAGS) n3.c -o lab
-n4: clean slp
-	$(CC) $(CFLAGS) -DKILL=1 n4.c -o lab
+n4: clean
+	$(CC) $(CFLAGS) -DKILL=1 slp.c -o slp
+	$(CC) $(CFLAGS) n4.c -o lab
 n5: clean slp
-	$(CC) $(CFLAGS) -DKILL=0 n5.c -o lab
+	$(CC) $(CFLAGS) n5.c -o lab
 n6: clean slp
 	$(CC) $(CFLAGS) n6.c -o lab
 n7: clean slp
