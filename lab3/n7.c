@@ -28,12 +28,11 @@ int main (int argc, char * argv[]) {
         perror("fork error");
         exit (1);
     }
-    //signal(SIGALRM, signal_handler);
-    struct sigaction sigact;
-    sigemptyset(&sigact.sa_mask);
-    sigact.sa_flags = 0;
-    sigact.sa_handler = signal_handler;
-    sigaction(SIGALRM, &sigact, NULL);
+    struct sigaction act, oact;
+    act.sa_handler = signal_handler;
+    if (sigaction(SIGINT, &act, &oact) == -1){
+        perror("sigaction error");
+    }
 
     if(pid){
         printf("[P] Fork returned %d\n", pid);
@@ -53,9 +52,6 @@ int main (int argc, char * argv[]) {
 
         printf("[C] Fork returned %d\n", pid);
         printf("[C] Дочерний процесс создан! PID = %d\n", getpid());
-        /*if(pause() == -1){
-            perror("pause error");
-        }*/
         int i,j;
         for(i = 0;i < 100;i++){
             /*for(j = 0; j < 100 ; j++){
@@ -64,6 +60,7 @@ int main (int argc, char * argv[]) {
             if(pause() == -1){
                 perror("pause error");
             }
+            printf("[C] i = %d\n", i);
         }
         printf("[C] Done!\n");
     }
@@ -72,5 +69,4 @@ int main (int argc, char * argv[]) {
 
 void signal_handler(int sig_id){
     printf("Signal is handled! \n");
-    //signal(SIGALRM, SIG_DFL);
 }
