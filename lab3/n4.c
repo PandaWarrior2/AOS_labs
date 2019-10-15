@@ -20,12 +20,21 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
+void signal_handler(int);
 int main (int argc, char * argv[]) {
     int pid;
     if((pid = fork()) == -1) {
         perror("fork error");
         exit (1);
     }
+#ifdef NUMBER7
+    struct sigaction act, oact;
+    act.sa_handler = signal_handler;
+    if (sigaction(SIGALRM, &act, &oact) == -1){
+        perror("sigaction error");
+    }
+
+#endif
     if(pid){
         printf("[P] Fork returned %d\n", pid);
         printf("[P] PID = %d\n", getpid());
@@ -53,4 +62,8 @@ int main (int argc, char * argv[]) {
 #endif
     }
     return 0;
+}
+
+void signal_handler(int sigid){
+    printf("[HND] signal catched by handler!\n");
 }

@@ -54,7 +54,7 @@ int main (int argc, char * argv[]) {
                 printf("[C] i = %d\n", i);
             }
         }
-    }
 #endif
+    }
     return 0;
 }
