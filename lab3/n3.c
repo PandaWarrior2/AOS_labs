@@ -20,14 +20,21 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
-void signal_handler(int);
+
 int main(int argc, char * argv[], char * argp[]){
     if(argc < 2){
         printf("Usage: %s program_name [arg1, arg2, ..., argn].\n", *argv);
         exit(1);
     }
-    signal(SIGCHLD, signal_handler);
     int pid;
+
+    struct sigaction act, oact;
+    act.sa_handler = SIG_DFL;
+    act.sa_flags = SA_NOCLDWAIT;
+    if (sigaction(SIGCHLD, &act, &oact) == -1){
+        perror("sigaction error");
+    }
+
     if((pid=fork()) == -1){
         perror("[P] fork error");
         exit(0);
@@ -54,14 +61,4 @@ int main(int argc, char * argv[], char * argp[]){
 
     }
     return 0;
-}
-void signal_handler(int signal_id){
-    printf("Сигнал процессу перехвачен обработчиком! %d\n", getpid());
-    int w, n;
-    if((w = wait(&n)) == -1){
-        perror("wait error");
-    }
-    else{
-        printf("PID %d: Exit code = %d\n", w, n);
-    }
 }
