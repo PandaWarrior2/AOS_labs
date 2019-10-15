@@ -3,15 +3,15 @@
  *
  *       Filename:  n6.c
  *
- *    Description:  
+ *    Description:  Lab 3, number 6
  *
  *        Version:  1.0
  *        Created:  14.10.2019 18:46:56
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  YOUR NAME (), 
- *   Organization:  
+ *         Author:  Svyatoslav Nikitin, M19-512
+ *   Organization:  MEPhI
  *
  * =====================================================================================
  */
@@ -35,11 +35,9 @@ int main (int argc, char * argv[]) {
         if(kill(pid, SIGINT) == -1)
         {
             perror("kill error");
-            exit(2);
         }
         if(wait(&code) == -1){
             perror("wait error");
-            exit(3);
         }
         printf("Exit status: %d\n", code);
     }
@@ -50,7 +48,7 @@ int main (int argc, char * argv[]) {
         int i,j;
         for(i = 0;i < 100;i++){
             for(j = 0; j < 100 ; j++){
-                printf(" i = %d\n", i);
+                printf("[C] i = %d\n", i);
             }
         }
     }

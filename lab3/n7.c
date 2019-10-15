@@ -15,7 +15,7 @@
  *
  * =====================================================================================
  */
-
+#define _POSIX_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
@@ -28,7 +28,13 @@ int main (int argc, char * argv[]) {
         perror("fork error");
         exit (1);
     }
-    signal(SIGCONT, signal_handler);
+    //signal(SIGALRM, signal_handler);
+    struct sigaction sigact;
+    sigemptyset(&sigact.sa_mask);
+    sigact.sa_flags = 0;
+    sigact.sa_handler = signal_handler;
+    sigaction(SIGALRM, &sigact, NULL);
+
     if(pid){
         printf("[P] Fork returned %d\n", pid);
         printf("[P] PID = %d\n", getpid());
@@ -40,7 +46,6 @@ int main (int argc, char * argv[]) {
         }  */
         if(wait(&code) == -1){
             perror("wait error");
-            exit(3);
         }
         printf("Exit status: %d\n", code);
     }
@@ -48,21 +53,24 @@ int main (int argc, char * argv[]) {
 
         printf("[C] Fork returned %d\n", pid);
         printf("[C] Дочерний процесс создан! PID = %d\n", getpid());
-        if(pause() == -1){
+        /*if(pause() == -1){
             perror("pause error");
-            exit(4);
-        }
+        }*/
         int i,j;
         for(i = 0;i < 100;i++){
-            for(j = 0; j < 100 ; j++){
-                printf(" i = %d\n", i);
+            /*for(j = 0; j < 100 ; j++){
+                printf("[C] i = %d\n", i);
+            }*/
+            if(pause() == -1){
+                perror("pause error");
             }
         }
+        printf("[C] Done!\n");
     }
     return 0;
 }
 
 void signal_handler(int sig_id){
     printf("Signal is handled! \n");
-    signal(SIGCONT, SIG_DFL);
+    //signal(SIGALRM, SIG_DFL);
 }

@@ -34,11 +34,9 @@ int main (int argc, char * argv[]) {
         if(kill(pid, SIGUSR1) == -1)
         {
             perror("kill error");
-            exit(2);
         }
         if(wait(&code) == -1){
             perror("wait error");
-            exit(3);
         }
         printf("Exit status: %d\n", code);
     }
@@ -49,7 +47,7 @@ int main (int argc, char * argv[]) {
         int i,j;
         for(i = 0;i < 100;i++){
             for(j = 0; j < 100 ; j++){
-                printf(" i = %d\n", i);
+                printf("[C] i = %d\n", i);
             }
         }
     }
