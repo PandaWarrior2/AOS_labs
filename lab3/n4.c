@@ -41,12 +41,16 @@ int main (int argc, char * argv[]) {
 
         printf("[C] Fork returned %d\n", pid);
         printf("[C] Дочерний процесс создан! PID = %d\n", getpid());
+#ifdef NUMBER7
+        pause();
+#else
         int i,j;
         for(i = 0;i < 100;i++){
             for(j = 0; j < 100 ; j++){
                 printf("[C] i = %d\n", i);
             }
         }
+#endif
     }
     return 0;
 }

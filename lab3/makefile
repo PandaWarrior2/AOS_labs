@@ -14,7 +14,9 @@ n5: clean
 n6: clean
 	$(CC) $(CFLAGS) n6.c -o lab
 n7: clean
-	$(CC) $(CFLAGS) n7.c -o lab
+	$(CC) $(CFLAGS) n4.c -DNUMBER7 -o lab4
+	$(CC) $(CFLAGS) n5.c -DNUMBER7 -o lab5
+	$(CC) $(CFLAGS) n6.c -DNUMBER7 -o lab6
 n8: clean
 	$(CC) $(CFLAGS) n8.c -o lab
 n9: clean
@@ -24,7 +26,7 @@ n10: clean
 n11: clean
 	$(CC) $(CFLAGS) n11.c -o lab
 clean:
-	rm -f lab a.out file slp prog
+	rm -f lab* a.out file slp prog
 slp: clean
 	$(CC) $(CFLAGS) slp.c -o slp
 prog10: clean
