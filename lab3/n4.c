@@ -27,14 +27,6 @@ int main (int argc, char * argv[]) {
         perror("fork error");
         exit (1);
     }
-#ifdef NUMBER7
-    struct sigaction act, oact;
-    act.sa_handler = signal_handler;
-    if (sigaction(SIGALRM, &act, &oact) == -1){
-        perror("sigaction error");
-    }
-
-#endif
     if(pid){
         printf("[P] Fork returned %d\n", pid);
         printf("[P] PID = %d\n", getpid());
@@ -51,15 +43,19 @@ int main (int argc, char * argv[]) {
         printf("[C] Fork returned %d\n", pid);
         printf("[C] Дочерний процесс создан! PID = %d\n", getpid());
 #ifdef NUMBER7
+    struct sigaction act, oact;
+    act.sa_handler = signal_handler;
+    if (sigaction(SIGALRM, &act, &oact) == -1){
+        perror("sigaction error");
+    }
         pause();
-#else
+#endif
         int i,j;
         for(i = 0;i < 100;i++){
             for(j = 0; j < 100 ; j++){
                 printf("[C] i = %d\n", i);
             }
         }
-#endif
     }
     return 0;
 }
