@@ -26,7 +26,7 @@ n10: clean
 n11: clean
 	$(CC) $(CFLAGS) n11new.c -o lab
 clean:
-	rm -f lab* a.out file slp prog
+	rm -f lab* a.out file slp prog matrix
 slp: clean
 	$(CC) $(CFLAGS) slp.c -o slp
 prog10: clean

@@ -117,6 +117,7 @@ int main(int argc, char * argv []){
 
 void signal_handler(int sigid){
     if(sigid == SIGUSR1){
+        printf("\n");
         sleep(1);
     }
 }
