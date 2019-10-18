@@ -65,27 +65,33 @@ int main(int argc, char * argv []){
         printf("[P] Родительский процесс (PID = %d) отвечает за отрисовку матрицы на экране \n", getpid());
         int n;
         while (1){
-            sigwait(&newset, &n);
+            //sigwait(&newset, &n);
             //sigsuspend(&newset);
-            kill(pid, SIGUSR1);
-            sleep(1);
+           // sleep(1);
+            printf("[P] Результат обработки:\n");
+
             lseek(fd, 0, SEEK_SET);
             for(int i=0;i<dim;i++){
                 read(fd, str, 10);
                 write(1, str, 10);
                 write(1, "\n", 1);
             }
+            kill(pid, SIGUSR1);
+            sigwait(&newset, &n);
+            //sigsuspend(&newset);
         }
     }
     else {
         sigaction(SIGUSR1, &act, &oact);
         printf("[C] Дочерний процесс (PID = %d) отвечает за проставление 1 в первом ненулевом элементе главной диагонали. \n", getpid());
-        int i,n;
+        int i=0,n;
         char s;
         while(1){
-            sleep(1);
+            //printf("[C] Обработка матрицы...");
+            sigwait(&newset, &n);
             lseek(fd, 0, SEEK_SET);
             do{
+                printf(" ");
                 n = read(fd, &s, 1);
                 if(s == '0') {
                     lseek(fd, (long)-1, SEEK_CUR);
@@ -94,14 +100,23 @@ int main(int argc, char * argv []){
                 }
                 lseek(fd, 10, SEEK_CUR);
             }while(n == 1);
-            kill(getppid(), SIGUSR1);
+            //kill(getppid(), SIGUSR1);
+            if(i == dim)
+            {
+                kill(getppid(), SIGINT);
+                break;
+            }
+            else{
+                kill(getppid(), SIGUSR1);
+                i++;
+            }
         }
     }
     return 0;
 }
 
 void signal_handler(int sigid){
-    printf("[H] Signal %d перехвачен! %d\n",sigid, getpid());
     if(sigid == SIGUSR1){
+        sleep(1);
     }
 }

@@ -22,13 +22,24 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdarg.h>
 void signal_handler(int);
+
 int main(int argc, char * argv[]) {
      struct sigaction act, oact;
      sigset_t set, oset;
 
      act.sa_handler = signal_handler;
      if(sigaction(SIGUSR1, &act, &oact) == -1){
+        perror("sigaction error");
+     }
+     if(sigaction(SIGUSR2, &act, &oact) == -1){
+        perror("sigaction error");
+     }
+     if(sigaction(SIGALRM, &act, &oact) == -1){
+        perror("sigaction error");
+     }
+     if(sigaction(SIGCONT, &act, &oact) == -1){
         perror("sigaction error");
      }
      if(sigaction(SIGINT, &act, &oact) == -1){
@@ -44,30 +55,12 @@ int main(int argc, char * argv[]) {
      int pid;
      kill(getpid(), SIGUSR1);
      sigprocmask(SIG_SETMASK,&oset,0);
-     /* if((pid = fork()) == -1){
-        perror("fork error");
-     }
-     if(pid){
-         kill(pid, SIGUSR1);
-     }
-     else{
-         printf("[C] Child process started! PID = %d\n", getpid());
-         sigaction(SIGUSR1, &act, &oact);
-         if(sigsuspend(&set) == -1){
-             perror("sigsuspend error");
-         }
-         printf("[C] Child process finished!");
-    }*/
 }
 
 void signal_handler(int sig) {
     printf("Сигнал %d перехвачен!\n", sig);
     if(sig == SIGUSR1) {
-        printf("Wait 10 sec");
-        for(int i=0;i<10;i++){
-            sleep(1);
-            printf(".");
-        }
+        sleep(30);
     }
         printf("\n");
 
