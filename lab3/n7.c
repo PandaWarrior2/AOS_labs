@@ -38,11 +38,6 @@ int main (int argc, char * argv[]) {
         printf("[P] Fork returned %d\n", pid);
         printf("[P] PID = %d\n", getpid());
         int code;
-        /*  if(kill(pid, SIGINT) == -1)
-        {
-            perror("kill error");
-            exit(2);
-        }  */
         if(wait(&code) == -1){
             perror("wait error");
         }
@@ -54,9 +49,6 @@ int main (int argc, char * argv[]) {
         printf("[C] Дочерний процесс создан! PID = %d\n", getpid());
         int i,j;
         for(i = 0;i < 100;i++){
-            /*for(j = 0; j < 100 ; j++){
-                printf("[C] i = %d\n", i);
-            }*/
             if(pause() == -1){
                 perror("pause error");
             }

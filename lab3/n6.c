@@ -21,7 +21,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+void handler(int);
 int main (int argc, char * argv[]) {
     int pid;
     if((pid = fork()) == -1) {
@@ -55,6 +55,10 @@ int main (int argc, char * argv[]) {
             }
         }
 #endif
+        printf("[C] Процесс завершен! \n");
     }
     return 0;
+}
+void handler(int sigid){
+    printf("Сигнал перехвачен обработчиком!\n");
 }
