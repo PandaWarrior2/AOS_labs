@@ -45,16 +45,14 @@ int main (int argc, char * argv[]) {
 
         printf("[C] Fork returned %d\n", pid);
         printf("[C] Дочерний процесс создан! PID = %d\n", getpid());
+        for(int i = 0;i < 100;i++){
 #ifdef NUMBER7
-        pause();
+            pause();
 #else
-        int i,j;
-        for(i = 0;i < 100;i++){
-            for(j = 0; j < 100 ; j++){
-                printf("[C] i = %d\n", i);
-            }
-        }
+            for(int j = 0; j < 10000 ; j++);
 #endif
+            printf("%d ", i);
+        }
         printf("[C] Процесс завершен! \n");
     }
     return 0;

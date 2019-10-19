@@ -48,13 +48,15 @@ int main (int argc, char * argv[]) {
     if (sigaction(SIGALRM, &act, &oact) == -1){
         perror("sigaction error");
     }
-        pause();
 #endif
-        int i,j;
-        for(i = 0;i < 100;i++){
-            for(j = 0; j < 100 ; j++){
-                printf("[C] i = %d\n", i);
-            }
+        for(int i = 0;i < 100;i++){
+#ifdef NUMBER7
+            alarm(1);
+            pause();
+#else
+            for(int j = 0; j < 10000 ; j++);
+#endif
+            printf("%d ",i);
         }
     }
     return 0;

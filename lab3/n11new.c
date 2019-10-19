@@ -48,7 +48,6 @@ int main(int argc, char * argv[]){
     sigprocmask(SIG_SETMASK, &mask, &omask);
     sigdelset(&mask, SIGUSR1);   // Сигнал, по которому синхронизируются процессы
     sigdelset(&mask, SIGINT);    // Для того, чтобы можно было выйти по ctrl+c
-   // sigdelset(&mask, SIGALRM);   // Для корректной работы sleep()
 
     int pid;
     if((pid = fork()) == -1){
@@ -59,13 +58,23 @@ int main(int argc, char * argv[]){
     if(pid){
         printf("[P] Дочерний процесс создан! PID = %d\n", pid);
         while(1){
-            print_matrix(fd,dim);
+//            print_matrix(fd,dim);
+
+            printf("[C] Выполняется обработка матрицы\n");
+
+            if(action(fd, dim) >= 11*dim-11){
+                if(kill(pid, SIGINT) == -1){
+                    perror("kill error");
+                }
+                break;
+            }
+
             if(kill(pid, SIGUSR1) == -1){
                 perror("[P] kill error");
             }
             sleep(1);
             if(sigsuspend(&mask) == -1){
-                perror("[P] sigsuspend error");
+                perror("[P] sigsuspend");
             }
         }
     }
@@ -73,14 +82,20 @@ int main(int argc, char * argv[]){
         printf("[C] PID = %d\n", getpid());
         while(1){
             if(sigsuspend(&mask) == -1) {
-                perror("[C] sigsuspend error");
+                perror("[C] sigsuspend");
             }
-            sleep(1);
-            printf("[C] Выполняется обработка матрицы\n");
-            action(fd, dim);
-            if(kill(getppid(), SIGUSR1) == -1){
-                perror("[C] kill error");
-            }
+            printf("[C] Выполняется вывод матрицы\n");
+            print_matrix(fd, dim);
+  /*            if(action(fd, dim) == 11*dim){
+                if(kill(getppid(), SIGINT) == -1){
+                    perror("kill error");
+                } */
+           // }
+            //else {
+                if(kill(getppid(), SIGUSR1) == -1){
+                    perror("[C] kill error");
+                }
+         //   }
         }
     }
     close(fd);
@@ -88,8 +103,6 @@ int main(int argc, char * argv[]){
 
 void sighandler(int sig){
     printf("[H] Handler call by PID = %d\n", getpid());
-    int d;
-    //scanf("%d", &d);
 }
 
 int create_matrix(int dim){
@@ -119,7 +132,7 @@ int action(int fd, int dim){
     }
 
     char c;
-    int n;
+    int n, pos;
     do{
         if((n = read(fd, &c, 1)) == -1){
             perror("read error");
@@ -134,16 +147,17 @@ int action(int fd, int dim){
             }
             break;
         }
-        if(lseek(fd, 10, SEEK_CUR) == -1){
+        if((pos = lseek(fd, dim, SEEK_CUR)) == -1){
             perror("lseek error");
         }
+        printf("%d ", pos);
+        if(pos == 11*dim) break;
     } while(n == 1);
-
     if(lseek(fd, old_pos, SEEK_SET) == -1){
         perror("[action] lseek_error");
         return -1;
     }
-    return 1;
+    return pos;
 }
 
 int print_matrix(int fd, int dim){
@@ -159,7 +173,7 @@ int print_matrix(int fd, int dim){
     int n;
     char * buf;
     buf = malloc(dim);
-    while(n = read(fd,buf,dim)){
+    while((n = read(fd,buf,dim))){
         if(n == -1){
             perror("read error");
         }

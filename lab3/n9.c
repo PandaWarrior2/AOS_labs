@@ -1,21 +1,20 @@
 /*
  * =====================================================================================
  *
- *       Filename:  n6.c
+ *       Filename:  n9.c
  *
- *    Description:  Lab 3, number 6
+ *    Description:  Lab 4, number 9
  *
  *        Version:  1.0
- *        Created:  14.10.2019 18:46:56
+ *        Created:  18.10.2019 23:12:30
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Svyatoslav Nikitin, M19-512
+ *         Author:  Svyatoslav Nikitin, m19-512
  *   Organization:  MEPhI
  *
  * =====================================================================================
  */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
