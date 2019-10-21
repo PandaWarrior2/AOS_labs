@@ -22,7 +22,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
-int pcheck(int, char*);
+#include "pcheck.h"
 int main(int argc, char * argv[], char * argp[]){
     int fds[2];
     pcheck(pipe(fds), "pipe error");
@@ -48,14 +48,4 @@ int main(int argc, char * argv[], char * argp[]){
     pcheck(close(fds[0]), "close fds0 error");
     pcheck(close(fds[1]), "close fds1 error");
     return 1;
-}
-
-int pcheck(int func, char * message){
-    if(func == -1) {
-        perror(message);
-        exit(1);
-    }
-    else{
-        return func;
-    }
 }
