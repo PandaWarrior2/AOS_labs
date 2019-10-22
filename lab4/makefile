@@ -17,6 +17,8 @@ n6: clean pcheck
 	$(CC) $(CFLAGS) -c n6_srv.c -o n6s.o
 	$(CC) $(CFLAGS) n6.o pcheck.o -o labc
 	$(CC) $(CFLAGS) n6s.o pcheck.o -o labs
+	echo "./labc& ; ./labs&" > run ; chmod +x run
+	echo "kill -9 `pgrep lab`" > kill ; chmod +x kill
 n7: clean pcheck
 	$(CC) $(CFLAGS) -c n7.c -o n7.o
 	$(CC) $(CFLAGS) n7.o pcheck.o -o lab

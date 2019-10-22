@@ -52,6 +52,7 @@ int main(int argc, char * argv []){
         int id = 0;
         int n;
         char c;
+        //fcntl(fds_i[0],F_SETFL,O_NDELAY);
         while(1){
             t.value = rand() % 10000;
             t.id = id++;
@@ -66,7 +67,6 @@ int main(int argc, char * argv []){
             do{
                 if((n = read(fds_i[0], &c, 1)) == -1){
                     perror("[P] read error!");
-                    break;
                 }
                 else{
                     if(write(1, &c, 1) == -1){
@@ -77,8 +77,8 @@ int main(int argc, char * argv []){
             printf("\n[P] Получение ответа завершено!\n");
             if(id == 15) {
                 printf("[P] Завершение родительского процесса!\n");
-                close(fds[0]);
-                close(fds_i[1]);
+                close(fds[1]);
+                close(fds_i[0]);
                 break;
             }
             sleep(1);
@@ -108,8 +108,8 @@ int main(int argc, char * argv []){
                 }
                 if(rec.id == 14){
                     printf("[C] Завершение дочернего процесса!\n");
-                    close(fds[1]);
-                    close(fds_i[0]);
+                    close(fds[0]);
+                    close(fds_i[1]);
                     break;
                 }
             }

@@ -32,11 +32,12 @@ struct packet{
 int main(int argc, char * argv[], char * argp[]){
     unlink("channel");
     pcheck(mknod("channel",  S_IFIFO | 0755, 0), "mknod error");
-    int wfd = pcheck(open("channel", O_WRONLY), "open error");
+    int wfd = pcheck(open("channel",O_WRONLY), "open error");
+    fcntl(wfd, O_NDELAY);
     struct packet tx;
     int i = 0;
     int n;
-    while(i < 15){
+    while(i < 1500){
         tx.id = i++;
         tx.value = rand() % 10000;
         n = pcheck(write(wfd, &tx, sizeof(struct packet)), "write error");
