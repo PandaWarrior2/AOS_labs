@@ -1,16 +1,16 @@
 /*
  * =====================================================================================
  *
- *       Filename:  n7.c
+ *       Filename:  n9.c
  *
- *    Description:  Lab 4, number 7
+ *    Description:  Lab 4, number 9
  *
  *        Version:  1.0
- *        Created:  21.10.2019 20:11:32
+ *        Created:  24.10.2019 15:02:50
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Svyatoslav Nikitin, m19-512
+ *         Author:  Nikitin Svyatoslav, m19-512
  *   Organization:  MEPhI
  *
  * =====================================================================================
@@ -24,6 +24,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include "pcheck.h"
+#include<sys/file.h>
 int main(int argc, char * argv[]){
     if(argc < 2){
         printf("Usage: %s filename", argv[0]);
@@ -41,6 +42,12 @@ int main(int argc, char * argv[]){
             perror("[P] open error");
             exit(1);
         }
+        struct flock lock;
+        lock.l_type = F_WRLCK;
+        lock.l_start = 0;
+        lock.l_whence = SEEK_SET;
+        lock.l_len = 0;
+        fcntl(fd, F_SETLKW, lock);
         int i = 0;
         int val;
         char *c;
@@ -49,6 +56,8 @@ int main(int argc, char * argv[]){
                 perror("[P] write error");
             }
         } while(i++ < 100);
+        lock.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, lock);
         close(fd);
     }
     else{
@@ -57,6 +66,13 @@ int main(int argc, char * argv[]){
             perror("[P] open error");
             exit(1);
         }
+        struct flock lock;
+        lock.l_type = F_RDLCK;
+        lock.l_start = 0;
+        lock.l_whence = SEEK_SET;
+        lock.l_len = 0;
+        fcntl(fd, F_SETLKW, lock);
+
         int i = 0;
         int val;
         char *c;
@@ -66,8 +82,12 @@ int main(int argc, char * argv[]){
             }
             write(1, &c, 1);
         } while(i++ < 100);
+        lock.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, lock);
         close(fd);
 
     }
     return 0;
 }
+
+
