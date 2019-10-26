@@ -8,6 +8,7 @@ n2: clean
 n3: clean
 	$(CC) $(CFLAGS) n3.c -o lab
 n4: clean
+	$(CC) $(CFLAGS) n4sub.c -o n4sub
 	$(CC) $(CFLAGS) n4.c -o lab
 n5: clean pcheck
 	$(CC) $(CFLAGS) -c n5.c -o n5.o

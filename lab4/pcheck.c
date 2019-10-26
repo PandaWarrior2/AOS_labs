@@ -22,6 +22,7 @@
 int pcheck(int func, char * message){
     if(func == -1) {
         perror(message);
+        printf("%d\n", errno);
         exit(1);
     }
     else{

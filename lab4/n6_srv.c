@@ -36,6 +36,7 @@ int main(int argc, char * argv[], char * argp[]){
     struct packet rx;
     int i = 0;
     int n;
+    printf("[RX] Server started...\n");
     while(i < 15){
         n = pcheck(read(rfd, &rx, sizeof(struct packet)), "read error");
         if(n < sizeof(struct packet)){
