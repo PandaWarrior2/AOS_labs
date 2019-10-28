@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=
+CFLAGS=-lrt
 
 n1: clean
 	$(CC) $(CFLAGS) n1.c -o lab
