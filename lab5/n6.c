@@ -36,7 +36,6 @@ void signal_handler(int);
 int main(int argc, char * argv[]){
     printf("[P-%d] Server started!\n", getpid());
     int pid;
-    int pids[PROCESS_NUM];
 
     int qd;
     if((qd = msgget(getpid(), IPC_CREAT | 0755)) == -1){
@@ -76,7 +75,6 @@ int main(int argc, char * argv[]){
                 perror("execv");
                 exit(1);
             default:
-                pids[i] = pid;
                 break;
         }
     }
