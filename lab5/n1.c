@@ -30,10 +30,6 @@ int get_stats(int);
 void gen_random(char *, const int);
 int main(int argc, char * argv[]){
     int qd;
-    /*if((qd = mq_open("/queue", O_RDWR | O_CREAT, 0755, NULL)) == -1){
-        perror("mq_open");
-        exit(1);
-    }*/
     if((qd = msgget(1, IPC_CREAT | 0755)) == -1) {
         perror("msgget");
         exit(1);

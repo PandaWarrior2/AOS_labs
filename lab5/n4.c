@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  YOUR NAME (), 
+ *         Author:  Svyatoslav Nikitin, M19-512
  *   Organization:  MEPhI
  *
  * =====================================================================================
