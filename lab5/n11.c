@@ -28,7 +28,7 @@
 #include <string.h>
 #define DIM 10
 int print_matrix(int, int);
-int action(int, int);
+int action(int, int, char);
 
 int main(int argc, char *argv[]){
     int pid;
@@ -55,14 +55,58 @@ int main(int argc, char *argv[]){
     }
     struct msg {
         long mtype;
-        char mtext[20];
+        char mtext[3];
     } msg, ans;
 
     if(pid){
-        print_matrix(fd, DIM*DIM);
+        while(1){
+            print_matrix(fd, DIM);
+            msg.mtype = pid;
+            strcpy(msg.mtext,"1");
+
+            if(msgsnd(qd, &msg, 20, 0) == -1){
+                perror("[P] msgsnd");
+                exit(1);
+            }
+
+            if(msgrcv(qd, &msg, 20, getpid(), 0) == -1){
+                perror("[P] msgrcv");
+                exit(1);
+            }
+            else{
+                printf("[P] %s\n",msg.mtext);
+                if(!strcmp(msg.mtext, "CLS")){
+                    msgctl(qd, IPC_RMID, NULL);
+                    break;
+                }
+            }
+        }
     }
     else{
+        int n, isCont=1;
         printf("[C] Дочерний процесс запущен! pid = %d \n", getpid());
+        while(isCont){
+            if(msgrcv(qd, &ans, 20, getpid(), 0) == -1){
+                perror("[C] msgrcv");
+                exit(1);
+            }
+
+            n = action(fd, DIM, ans.mtext[0]);
+            ans.mtype = getppid();
+            if(n < DIM*DIM){
+                strcpy(ans.mtext, "CON");
+            }
+            else{
+                strcpy(ans.mtext, "CLS");
+                isCont = 0;
+            }
+
+            if(msgsnd(qd, &ans, 20, 0) == -1){
+                perror("[C] msgsnd");
+                exit(1);
+            }
+        }
+        printf("[C] Дочерний процесс завершён!\n");
     }
 
 }
@@ -94,7 +138,7 @@ int print_matrix(int fd, int dim){
     return 1;
 }
 
-int action(int fd, int dim){
+int action(int fd, int dim, char ic){
     int old_pos;
     if((old_pos = lseek(fd, 0, SEEK_CUR)) == -1){
         perror("[action] lseek_error");
@@ -106,7 +150,7 @@ int action(int fd, int dim){
     }
 
     char c;
-    int n, pos;
+    int n, pos=0;
     do{
         if((n = read(fd, &c, 1)) == -1){
             perror("read error");
@@ -116,7 +160,7 @@ int action(int fd, int dim){
             if(lseek(fd, (long)-1, SEEK_CUR) == -1){
                 perror("lseek error");
             }
-            if(write(fd, "1", 1) == -1){
+            if(write(fd, &ic, 1) == -1){
                 perror("write error");
             }
             break;
@@ -124,7 +168,6 @@ int action(int fd, int dim){
         if((pos = lseek(fd, dim, SEEK_CUR)) == -1){
             perror("lseek error");
         }
-        printf("%d ", pos);
         if(pos == 11*dim) break;
     } while(n == 1);
     if(lseek(fd, old_pos, SEEK_SET) == -1){
