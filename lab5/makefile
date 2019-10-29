@@ -10,7 +10,7 @@ n3: clean
 n4: clean
 	$(CC) $(CFLAGS) n4.c -o lab
 n5: clean
-	$(CC) $(CFLAGS) n5.o -o lab
+	$(CC) $(CFLAGS) n5.c -o lab
 n6: clean
 	$(CC) $(CFLAGS) n6.c -o n7.o
 n7: clean
