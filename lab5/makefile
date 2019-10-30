@@ -14,15 +14,15 @@ n5: clean
 n6: clean
 	$(CC) $(CFLAGS) n6_client.c -o client
 	$(CC) $(CFLAGS) n6.c -o srv
-n7: clean
-	$(CC) $(CFLAGS) n7.c -o lab
 n8: clean
 	$(CC) $(CFLAGS) n8.c -o srv
 	$(CC) $(CFLAGS) n8_client.c -o client
 n9: clean
-	$(CC) $(CFLAGS) n9.c -o lab
+	$(CC) $(CFLAGS) n9.c -o srv
+	$(CC) $(CFLAGS) n9_client.c -o client
 n10: clean
-	$(CC) $(CFLAGS) n10.c -o lab
+	$(CC) $(CFLAGS) n10.c -o srv
+	$(CC) $(CFLAGS) n10_client.c -o client
 n11: clean
 	$(CC) $(CFLAGS) n11.c -o lab
 
