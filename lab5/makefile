@@ -17,7 +17,8 @@ n6: clean
 n7: clean
 	$(CC) $(CFLAGS) n7.c -o lab
 n8: clean
-	$(CC) $(CFLAGS) n8.c -o lab
+	$(CC) $(CFLAGS) n8.c -o srv
+	$(CC) $(CFLAGS) n8_client.c -o client
 n9: clean
 	$(CC) $(CFLAGS) n9.c -o lab
 n10: clean
