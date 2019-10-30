@@ -47,18 +47,18 @@ int main(int argc, char * argv[]){
     } rx, tx;
 
     while(1){
-        if(msgrcv(qd, &rx, 20, 0, 0) == -1){
+        if(msgrcv(qd, &rx, 20, -1000000, 0) == -1){
             perror("msgrcv");
         }
         else{
-            printf("[RECIEVE] Получено сообщение с ключом %d: %s\n", rx.mtype, rx.mtext);
-            tx.mtype = rx.mtype;
+            printf("[RECIEVE] Получено сообщение с ключом %ld: %s\n", rx.mtype, rx.mtext);
+            tx.mtype = rx.mtype + 1000000;
             sprintf(tx.mtext, "%d", H(rx.mtext));
             if(msgsnd(qd, &tx, 20, 0) == -1){
                 perror("msgsnd");
             }
             else{
-                printf("[SEND] Ответ отправлен! (key = %d, text = %s)\n", tx.mtype, tx.mtext);
+                printf("[SEND] Ответ отправлен! (key = %ld, text = %s)\n", tx.mtype, tx.mtext);
             }
         }
     }

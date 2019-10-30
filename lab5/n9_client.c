@@ -29,7 +29,7 @@
 #include <time.h>
 int main(int argc, char * argv[]){
     if(argc < 2) {
-        printf("Usage: %s <queue key>\n");
+        printf("Usage: %s <queue key>\n", argv[0]);
         exit(1);
     }
     printf("Client started!\n");
@@ -60,11 +60,11 @@ int main(int argc, char * argv[]){
             printf("Сообщение отправлено! Ожидание ответа...\n");
         }
 
-        if(msgrcv(qd, &rx, 20, 0, 0) == -1){
+        if(msgrcv(qd, &rx, 20, getpid(), 0) == -1){
             perror("msgrcv");
         }
         else{
-            printf("Получен ответ! (key = %d ; text = %s)\n", rx.mtype, rx.mtext);
+            printf("Получен ответ! (key = %ld ; text = %s)\n", rx.mtype, rx.mtext);
         }
     }
 

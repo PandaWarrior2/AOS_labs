@@ -37,15 +37,17 @@ int main(int argc, char * argv[]){
 
     struct msg {
         long mtype;
-        char mtext[20];
+        char mtext[50];
     } msg;
 
     if((qd = msgget(qid, IPC_CREAT | 0755)) == -1) {
         perror("msgget");
         exit(1);
     }
-
-    if(msgrcv(qd, &msg, 20, msg_type, 0) == -1) {
+    msg.mtype = 22;
+    strcpy(msg.mtext, "12345678901234567890123456789012345678901234590");
+    msgsnd(qd, &msg, 50, 0);
+    if(msgrcv(qd, &msg, 10, msg_type, MSG_NOERROR) == -1) {
         perror("msgrcv");
     }
     else{
