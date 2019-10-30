@@ -1,16 +1,16 @@
 /*
  * =====================================================================================
  *
- *       Filename:  n6_client.c
+ *       Filename:  n6_client_new.c
  *
- *    Description:  Lab 5, number 6 - CLIENT
+ *    Description:  Lab 5, number 6. Client.
  *
- *        Version:  1.0
- *        Created:  29.10.2019 10:55:39
+ *        Version:  2.0
+ *        Created:  30.10.2019 14:43:58
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Svyatoslav Nikitin, M19-512
+ *         Author:  Nikitin Svyatoslav, M19-512
  *   Organization:  MEPhI
  *
  * =====================================================================================
@@ -27,71 +27,47 @@
 #include <sys/msg.h>
 #include <string.h>
 #include <time.h>
-void gen_random_str(char*, const int);
 int main(int argc, char * argv[]){
-    printf("[%d] Client started!\n", getpid());
-    int pkey = atoi(argv[1]);
-    int key = atoi(argv[2]);
-    printf("[%d] key = %d ; parent key = %d\n", getpid(), key, pkey);
-    int qd;
-    int pqd;
-    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
-        printf("[ERR %d] msgget: %s", getpid(), sys_errlist[errno]);
-
+    if(argc < 2) {
+        printf("Usage: %s <queue key>\n");
         exit(1);
     }
-    else{
-        printf("[%d] Очередь создана! (%d) \n", getpid(), qd);
-    }
-
-    if((pqd = msgget(pkey, 0755)) == -1){
-    printf("[ERR %d] msgget: %s", getpid(), sys_errlist[errno]);
+    printf("Client started!\n");
+    int srv_key = atoi(argv[1]);
+    int qd, pqd;
+    if((pqd = msgget(srv_key, 0755)) == -1){
+        perror("msgget (srv queue)");
         exit(1);
     }
-    else{
-        printf("[%d] Очередь создана! (%d; %d) \n", getpid(), pkey, qd);
+    printf("Соедиение с очередью сервера (%d) установлено!\n", srv_key);
+    if((qd = msgget(getpid(), IPC_CREAT | 0755)) == -1){
+        perror("msgget (client queue)");
+        exit(1);
     }
-    printf("[%d] Выполняется формирование и отправка сообщений...\n", getpid());
-
-    struct msg {
+    printf("Очередь с ключом %d создана!\n", getpid());
+    struct {
         long mtype;
         char mtext[20];
-    } msg, ans;
+    } tx, rx;
 
-    srand((unsigned int)time(NULL) % getpid());
-
-    for(int i = 1; i < 26; i++){
-        msg.mtype = getpid();
-        gen_random_str(msg.mtext, 19);
-
-        if(msgsnd(pqd, &msg, 20, 0) == -1){
-            printf("[ERR %d] msgsnd: %s", getpid(), sys_errlist[errno]);
+    while(1){
+        printf("Введите сообщение: ");
+        scanf("%s", tx.mtext);
+        tx.mtype = getpid();
+        if(msgsnd(pqd, &tx, 20, 0) == -1){
+            perror("msgsnd");
         }
         else{
-            printf("[SEND %d] Сообщение отправлено! -> %d\n", getpid(), pqd);
+            printf("Сообщение отправлено! Ожидание ответа...\n");
         }
-    }
 
-    for(int i = 0; i < 25; i++){
-        if(msgrcv(qd, &ans, 20, 0, 0) == -1) {
-            printf("[ERR %d] msgrcv: %s", getpid(), sys_errlist[errno]);
+        if(msgrcv(qd, &rx, 20, 0, 0) == -1){
+            perror("msgrcv");
         }
         else{
-            printf("[ANS %d] Ответ получен! (%s) \n", getpid(), ans.mtext);
+            printf("Получен ответ! (key = %d ; text = %s)\n", rx.mtype, rx.mtext);
         }
-
-    }
-    printf("[%d] Terminated!\n", getpid());
-}
-
-void gen_random_str(char *s, const int len) {
-    static const char alphanum[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
-    for (int i = 0; i < len; ++i) {
-        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
     }
 
-    s[len] = 0;
+
 }
