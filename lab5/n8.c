@@ -30,15 +30,22 @@
 #include <sys/wait.h>
 int H(char*);
 void signal_handler(int);
+
+key_t key; // todo: плохое решение. Подумать как можно обойтись без глобальной переменной.
+
 int main(int argc, char * argv[]){
     printf("Server started!\n");
     int qd;
-    if((qd = msgget(getpid(), IPC_CREAT | 0755)) == -1){
+    if((key = ftok(*argv, 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
+    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
         perror("msgget");
         exit(1);
     }
     else{
-        printf("Очередь создана! Ключ: %d\n", getpid());
+        printf("Очередь создана! Ключ: %d\n", key);
     }
     struct sigaction act, oact;
     act.sa_handler = signal_handler;
@@ -54,14 +61,14 @@ int main(int argc, char * argv[]){
 
     while(1){
         if(msgrcv(qd, &rx, 20, 0, 0) == -1){
-            //perror("msgrcv");
+            perror("msgrcv");
         }
         else{
             printf("[RECIEVE] Получено сообщение с ключом %d: %s\n", rx.mtype, rx.mtext);
         }
         int cqd;
         if((cqd = msgget(rx.mtype, 0755)) == -1){
-            //perror("msgget (client queue)");
+            perror("msgget (client queue)");
         }
         else{
             tx.mtype = 1;
@@ -88,7 +95,8 @@ int H(char * str){
 void signal_handler(int sig){
     if(sig == SIGINT){
         int qd;
-        if((qd = msgget(getpid(), 0755)) == -1){
+
+        if((qd = msgget(key, 0755)) == -1){
             perror("[HND] msgget");
         }
         else{
@@ -96,7 +104,7 @@ void signal_handler(int sig){
                 perror("[HND] msgctl");
             }
             else{
-                printf("[HND] Очередь %d уничтожена!\n", getpid());
+                printf("[HND] Очередь %d уничтожена!\n", key);
                 exit(0);
             }
         }

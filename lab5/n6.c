@@ -32,12 +32,17 @@ int H(char*);
 int main(int argc, char * argv[]){
     printf("Server started!\n");
     int qd;
-    if((qd = msgget(getpid(), IPC_CREAT | 0755)) == -1){
+    key_t key;
+    if((key = ftok(*argv, 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
+    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
         perror("msgget");
         exit(1);
     }
     else{
-        printf("Очередь создана! Ключ: %d\n", getpid());
+        printf("Очередь создана! Ключ: %d\n", key);
     }
     printf("Ожидается получение сообщений...\n");
     struct {

@@ -29,11 +29,15 @@
 #include <time.h>
 int main(int argc, char * argv[]){
     if(argc < 2) {
-        printf("Usage: %s <queue key>\n", argv[0]);
+        printf("Usage: %s <server_filename>\n", *argv);
         exit(1);
     }
     printf("Client started!\n");
-    int srv_key = atoi(argv[1]);
+    key_t srv_key;
+    if((srv_key = ftok(*(argv+1), 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
     int qd;
     if((qd = msgget(srv_key, 0755)) == -1){
         perror("msgget (srv queue)");
@@ -42,25 +46,27 @@ int main(int argc, char * argv[]){
     printf("Соедиение с очередью сервера (%d) установлено!\n", srv_key);
     struct {
         long mtype;
+        int sender;
         char mtext[20];
     } tx, rx;
 
     while(1){
         printf("Введите сообщение: ");
         scanf("%s", tx.mtext);
-        tx.mtype = getpid();
-        if(msgsnd(qd, &tx, 20, 0) == -1){
+        tx.mtype = 1;
+        tx.sender = getpid();
+        if(msgsnd(qd, &tx, 24, 0) == -1){
             perror("msgsnd");
         }
         else{
             printf("Сообщение отправлено! Ожидание ответа...\n");
         }
 
-        if(msgrcv(qd, &rx, 20, getpid()+1000000, 0) == -1){
+        if(msgrcv(qd, &rx, 24, getpid(), 0) == -1){
             perror("msgrcv");
         }
         else{
-            printf("Получен ответ! (key = %ld ; text = %s)\n", rx.mtype, rx.mtext);
+            printf("Получен ответ! (key = %ld; sender = %d; text = %s)\n", rx.mtype, rx.sender, rx.mtext);
         }
     }
 

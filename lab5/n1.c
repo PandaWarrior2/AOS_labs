@@ -30,7 +30,7 @@ int get_stats(int);
 void gen_random(char *, const int);
 int main(int argc, char * argv[]){
     int qd;
-    if((qd = msgget(1, IPC_CREAT | 0755)) == -1) {
+    if((qd = msgget(IPC_PRIVATE, IPC_CREAT | 0755)) == -1) {
         perror("msgget");
         exit(1);
     }
@@ -42,7 +42,8 @@ int main(int argc, char * argv[]){
     } msg;
 
     char str[20];
-    for(int i = 0; i < 50; i++){
+    int i;
+    for(i = 0; i < 50; i++){
         msg.mtype = (long)i;
         gen_random(str, 10);
         strcpy(msg.mtext, str);
@@ -85,8 +86,8 @@ void gen_random(char *s, const int len) {
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz";
-
-    for (int i = 0; i < len; ++i) {
+    int i;
+    for (i = 0; i < len; ++i) {
         s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
     }
 

@@ -30,32 +30,41 @@
 #include <signal.h>
 
 void signal_handler(int);
+key_t key;
+
 int main(int argc, char * argv[]){
     if(argc < 2) {
-        printf("Usage: %s <queue key>\n");
+        printf("Usage: %s <server_filename>\n", *argv);
         exit(1);
     }
     printf("Client started!\n");
 
     struct sigaction act, oact;
     act.sa_handler = signal_handler;
-    act.sa_flags = 0;//SA_RESETHAND;
+    act.sa_flags = SA_RESETHAND;
     if(sigaction(SIGINT, &act, &oact) == -1){
         perror("sigaction");
     }
-
-    int srv_key = atoi(argv[1]);
+    key_t srv_key;
+    if((srv_key = ftok(*(argv+1), 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
     int qd, pqd;
     if((pqd = msgget(srv_key, 0755)) == -1){
         perror("msgget (srv queue)");
         exit(1);
     }
     printf("Соедиение с очередью сервера (%d) установлено!\n", srv_key);
-    if((qd = msgget(getpid(), IPC_CREAT | 0755)) == -1){
+    if((key = ftok(*argv, 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
+    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
         perror("msgget (client queue)");
         exit(1);
     }
-    printf("Очередь с ключом %d создана!\n", getpid());
+    printf("Очередь с ключом %d создана!\n", key);
     struct {
         long mtype;
         char mtext[20];
@@ -64,7 +73,7 @@ int main(int argc, char * argv[]){
     while(1){
         printf("Введите сообщение: ");
         scanf("%s", tx.mtext);
-        tx.mtype = getpid();
+        tx.mtype = key;
         if(msgsnd(pqd, &tx, 20, 0) == -1){
             perror("msgsnd");
         }
@@ -83,9 +92,8 @@ int main(int argc, char * argv[]){
 
 void signal_handler(int sig){
     if(sig == SIGINT){
-        printf("?");
         int qd;
-        if((qd = msgget(getpid(), 0755)) == -1){
+        if((qd = msgget(key, 0755)) == -1){
             perror("[HND] msgget");
         }
         else{
@@ -93,8 +101,8 @@ void signal_handler(int sig){
                 perror("[HND] msgctl");
             }
             else{
-                printf("[HND] Очередь %d уничтожена!\n", getpid());
-                //exit(0);
+                printf("[HND] Очередь %d уничтожена!\n", key);
+                exit(0);
             }
         }
     }

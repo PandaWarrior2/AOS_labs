@@ -32,20 +32,32 @@ int H(char*);
 int main(int argc, char * argv[]){
     printf("Server started!\n");
     int qd, cqd;
-    if((qd = msgget(getpid(), IPC_CREAT | 0755)) == -1){
+
+    key_t key, a_key;
+    if((key = ftok(*argv, 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
+
+    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
         perror("msgget (rx)");
         exit(1);
     }
     else{
-        printf("Очередь для приема сообщений создана! Ключ: %d\n", getpid());
+        printf("Очередь для приема сообщений создана! Ключ: %d\n", key);
     }
 
-    if((cqd = msgget(getpid()+1, IPC_CREAT | 0755)) == -1){
+    if((a_key = ftok(*argv, 2)) == -1){
+        perror("ftok");
+        exit(1);
+    }
+
+    if((cqd = msgget(a_key, IPC_CREAT | 0755)) == -1){
         perror("msgget (tx)");
         exit(1);
     }
     else{
-        printf("Очередь для отправки ответов создана! Ключ: %d\n", getpid()+1);
+        printf("Очередь для отправки ответов создана! Ключ: %d\n", a_key);
     }
 
     printf("Ожидается получение сообщений...\n");

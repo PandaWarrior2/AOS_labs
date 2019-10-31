@@ -29,18 +29,26 @@
 #include <time.h>
 int main(int argc, char * argv[]){
     if(argc < 2) {
-        printf("Usage: %s <queue key>\n");
+        printf("Usage: %s <server filename>\n", *argv);
         exit(1);
     }
     printf("Client started!\n");
-    int srv_key = atoi(argv[1]);
+    key_t srv_key, key;
+    if((srv_key = ftok(*(argv+1), 1)) == -1){
+        perror("ftok (srv)");
+        exit(1);
+    }
     int qd, pqd;
     if((pqd = msgget(srv_key, 0755)) == -1){
         perror("msgget (srv queue)");
         exit(1);
     }
     printf("Соедиение с очередью сервера (%d) установлено!\n", srv_key);
-    if((qd = msgget(getpid(), IPC_CREAT | 0755)) == -1){
+    if((key = ftok(*argv, getpid())) == -1){
+        perror("ftok (client)");
+        exit(0);
+    }
+    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
         perror("msgget (client queue)");
         exit(1);
     }
@@ -53,7 +61,7 @@ int main(int argc, char * argv[]){
     while(1){
         printf("Введите сообщение: ");
         scanf("%s", tx.mtext);
-        tx.mtype = getpid();
+        tx.mtype = key;
         if(msgsnd(pqd, &tx, 20, 0) == -1){
             perror("msgsnd");
         }
