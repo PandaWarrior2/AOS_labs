@@ -30,7 +30,13 @@ int get_stats(int);
 void gen_random(char *, const int);
 int main(int argc, char * argv[]){
     int qd;
-    if((qd = msgget(IPC_PRIVATE, IPC_CREAT | 0755)) == -1) {
+    key_t key;
+    if((key = ftok("queue_file", 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
+    printf("key = %d\n", key);
+    if((qd = msgget(key, IPC_CREAT | 0666)) == -1) {
         perror("msgget");
         exit(1);
     }
@@ -41,17 +47,32 @@ int main(int argc, char * argv[]){
         char mtext[20];
     } msg;
 
+    struct {
+        long mtype;
+        int id;
+        char mtext[50];
+    } msg1;
+
     char str[20];
+    char str1[50];
     int i;
-    for(i = 0; i < 50; i++){
+    for(i = 1; i < 20; i++){
         msg.mtype = (long)i;
-        gen_random(str, 10);
+        gen_random(str, 20);
         strcpy(msg.mtext, str);
-        if(msgsnd(qd, &msg, 20, 0) == -1){
+        if(msgsnd(qd, &msg, 20, IPC_NOWAIT) == -1){
             perror("msgsnd");
         }
-        printf("Message send! \n");
+        msg1.mtype = (long)i*10;
+        gen_random(str1, 50);
+        strcpy(msg1.mtext,  str);
+        if(msgsnd(qd, &msg1, 54, IPC_NOWAIT) == -1){
+            perror("msgsnd");
+        }
+        printf("Ok ");
+
     }
+    printf("\n");
     get_stats(qd);
     //it's number 2
     /*printf("Recieve messages...\n");

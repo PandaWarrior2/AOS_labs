@@ -26,15 +26,37 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <string.h>
+static void usage(char*, char*);
 int main(int argc, char * argv[]){
-    if(argc < 2){
+    /*if(argc < 2){
         printf("Usage: %s key\n", argv[0]);
         exit(1);
+    }*/
+    int mode=0, opt;
+    key_t key;
+    while((opt = getopt(argc, argv, "f:k:")) != -1){
+        switch(opt){
+            case 'k':
+                key = strtol(optarg, NULL, 10);
+                mode = 1;
+                break;
+            case 'f':
+                if((key = ftok(optarg, 1)) == -1){
+                    perror("ftok");
+                    exit(1);
+                }
+                mode = 2;
+                break;
+            default:
+                usage(argv[0], "Unreconized option\n");
+        }
     }
 
-    int key =  strtol(argv[1], NULL, 10);
+    if(!mode){
+        usage(argv[0], "must use either -f or -k option\n");
+    }
     int qid;
-    if((qid = msgget(key, 0755)) == -1){
+    if((qid = msgget(key, 0666)) == -1){
         perror("msgget");
     }
     if(msgctl(qid, IPC_RMID, NULL) == -1){
@@ -43,4 +65,15 @@ int main(int argc, char * argv[]){
     }
     printf("Queue with key %d deleted!\n", key);
     return 0;
+}
+
+static void usage(char * prog_name, char * msg){
+    if(msg != NULL){
+        fputs(msg, stderr);
+    }
+    fprintf(stderr, "Usage %s [options]\n", prog_name);
+    fprintf(stderr, "Options are:\n");
+    fprintf(stderr, "-k     key of queue\n");
+    fprintf(stderr, "-f     filename\n");
+    exit(EXIT_FAILURE);
 }

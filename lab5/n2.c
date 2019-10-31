@@ -28,11 +28,15 @@
 #include <string.h>
 int main(int argc, char * argv[]){
     if(argc < 3){
-        printf("Usage: %s queue_id msg_type\n", argv[0]);
+        printf("Usage: %s queue_file msg_type\n", argv[0]);
         exit(1);
     }
     int msg_type = strtol(argv[2], NULL, 10);
-    int qid = strtol(argv[1], NULL, 10);
+    key_t key;
+    if((key = ftok(argv[1], 1)) == -1){
+        perror("ftok");
+        exit(1);
+    }
     int qd;
 
     struct msg {
@@ -40,7 +44,7 @@ int main(int argc, char * argv[]){
         char mtext[20];
     } msg;
 
-    if((qd = msgget(qid, IPC_CREAT | 0755)) == -1) {
+    if((qd = msgget(key, IPC_CREAT | 0755)) == -1) {
         perror("msgget");
         exit(1);
     }
