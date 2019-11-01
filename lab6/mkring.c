@@ -32,11 +32,24 @@ typedef struct Proc {
     int pid;
     struct Proc *next;
 } Proc;
+typedef struct msg{
+    long mtype;
+    int value;
+} msg;
+
 void push(Proc **head, int pid){
     Proc * p = (Proc*) malloc(sizeof(Proc));
     p->pid = pid;
     p->next = (*head);
     *(head) = p;
+}
+int get_next(Proc *head, int pid){
+    for(Proc *i=head; i->next; i = i->next){
+        if(pid == i->pid){
+            return i->pid;
+        }
+    }
+    return -1;
 }
 int main(int argc, char * argv[]){
     Proc *head = NULL;
@@ -47,9 +60,9 @@ int main(int argc, char * argv[]){
         }
         else if(pid == 0){
             printf("[C] Created! pid = %d\n", getpid());
+            exit(EXIT_SUCCESS);
         }
         else{
-            wait(NULL);
             push(&head, pid);
             printf("[P] pushed! %d\n", head->pid);
         }
@@ -58,6 +71,25 @@ int main(int argc, char * argv[]){
     Proc *last, *i;
     for(last = head;last->next;last = last->next);
     last->next = head;
+    printf("[P] head PID = %d \n", last->pid);
+    key_t key;
+    if((key = ftok("queue", 1)) == -1){
+        perror("ftok");
+        exit(EXIT_FAILURE);
+    }
+
+    int qd;
+    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
+        perror("msgget");
+        exit(EXIT_FAILURE);
+    }
+    msg *mes;
+    mes->mtype = last->pid;
+    mes->value = 10;
+    if(msgsnd(qd, mes, 4, 0) == -1){
+        perror("msgsnd");
+        exit(EXIT_FAILURE);
+    }
 
     return 0;
 }
