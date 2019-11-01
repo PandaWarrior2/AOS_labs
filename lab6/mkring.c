@@ -53,14 +53,30 @@ int get_next(Proc *head, int pid){
 }
 int main(int argc, char * argv[]){
     Proc *head = NULL;
-    int pid;
+    int pid, qd, cqd;
+    key_t ckey;
     for(int i=0;i<10;i++){
         if((pid = fork()) == -1){
             perror("fork");
         }
         else if(pid == 0){
             printf("[C] Created! pid = %d\n", getpid());
-            exit(EXIT_SUCCESS);
+            msg *rc;
+            if((ckey = ftok("queue", 1)) == -1){
+                perror("ftok");
+                exit(EXIT_FAILURE);
+            }
+            if((cqd = msgget(ckey, IPC_CREAT | 0666)) == -1){
+                perror("msgget");
+                exit(EXIT_FAILURE);
+            }
+            if(msgrcv(cqd, rc, getpid(), 0,0) == -1){
+                perror("[C] msgrcv");
+            }
+            else{
+                printf("[C %d] Получено сообщение %d\n", getpid(), rc->value);
+            }
+            while(1);
         }
         else{
             push(&head, pid);
@@ -73,22 +89,23 @@ int main(int argc, char * argv[]){
     last->next = head;
     printf("[P] head PID = %d \n", last->pid);
     key_t key;
-    if((key = ftok("queue", 1)) == -1){
+    if((key = ftok("queue", 0)) == -1){
         perror("ftok");
         exit(EXIT_FAILURE);
     }
-
-    int qd;
-    if((qd = msgget(key, IPC_CREAT | 0755)) == -1){
+    if((qd = msgget(key, IPC_CREAT | 0666)) == -1){
         perror("msgget");
         exit(EXIT_FAILURE);
     }
     msg *mes;
     mes->mtype = last->pid;
-    mes->value = 10;
-    if(msgsnd(qd, mes, 4, 0) == -1){
+    mes->value = 9;
+    if(msgsnd(qd, mes, 3, 0) == -1){
         perror("msgsnd");
         exit(EXIT_FAILURE);
+    }
+    else{
+        printf("[P] SEND - сообщение отправлено!\n");
     }
 
     return 0;
