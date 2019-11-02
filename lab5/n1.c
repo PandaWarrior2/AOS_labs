@@ -26,6 +26,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <string.h>
+#include <time.h>
 int get_stats(int);
 void gen_random(char *, const int);
 int main(int argc, char * argv[]){
@@ -94,9 +95,11 @@ int get_stats(int qd){
         perror("msgctl");
         return -1;
     }
+    char str_t[100];
+    strftime (str_t, 100, "%d.%m.%y %X", localtime(&qds.msg_ctime));
     printf("UserID = %d\n", qds.msg_perm.uid);
     printf("GroupID = %d\n", qds.msg_perm.gid);
-    printf("CTime = %d\n", qds.msg_ctime);
+    printf("CTime = %d\n", str_t);
     printf("Max bytes = %d\n", qds.msg_qbytes);
     printf("Number of messages: %d\n", qds.msg_qnum);
     return 0;
